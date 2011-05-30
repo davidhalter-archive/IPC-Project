@@ -25,6 +25,7 @@ data:	data.o
 		$(CMP) -c $(CMPFLAGS) $<
 
 all:
+	  @make --no-print-directory clean
 		@make --no-print-directory display
 		@make --no-print-directory control
 		@make --no-print-directory main 
