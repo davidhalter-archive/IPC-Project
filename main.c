@@ -9,6 +9,7 @@ void stop();
 pid_t children[MAX_CHILDREN] = {0,0};
 void* shm; 
 key_t shm_key; 
+int sem = 0; //temporary, will change
 
 int main(void) {
   printf("IPC Project started\n"); 
