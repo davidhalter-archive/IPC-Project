@@ -1,5 +1,5 @@
 CMP=		g++
-#CMPFLAGS=	-g
+CMPFLAGS=	-g
 EXENAME0=	HSDisplay.e
 EXENAME1=	HSControl.e
 EXENAME2=	HSMain.e
@@ -12,20 +12,20 @@ display:	display.o
 control:	control.o 
 		$(CMP) $(LIB) $(CMPFLAGS) control.o -o $(EXENAME1)
 
-main:	main.o 
-		$(CMP) $(LIB) $(CMPFLAGS) main.o -o $(EXENAME2)
+main:		main.o socket_server.o
+		$(CMP) $(LIB) $(CMPFLAGS) main.o socket_server.o -o $(EXENAME2)
 
-sensor:	sensor_devices.o
+sensor:		sensor_devices.o
 		$(CMP) $(LIB) $(CMPFLAGS) sensor_devices.o -o $(EXENAME3)
 
-data:	data.o
+data:		data.o
 		$(CMP) $(LIB) $(CMPFLAGS) data.o -o $(EXENAME4)
 
 .cc.o:		
 		$(CMP) -c $(CMPFLAGS) $<
 
 all:
-	  @make --no-print-directory clean
+		@make --no-print-directory clean
 		@make --no-print-directory display
 		@make --no-print-directory control
 		@make --no-print-directory main 

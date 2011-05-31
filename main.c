@@ -1,5 +1,6 @@
 
 #include "common.c"
+#include "socket_server.h"
 
 void signal_handler(int sig);
 void stop();
@@ -18,11 +19,15 @@ int main(void) {
   shm = shm_get_memory(shm_key, SHM_SIZE);
 
   *((int*) shm) = 42;
+  
+  // socket tests
+  int sfd = socket_init();
+  socket_read(sfd);
 
-  children[0] = start_process("HSControl.e");
-  children[1] = start_process("HSDisplay.e");
+  //children[0] = start_process("HSControl.e");
+  //children[1] = start_process("HSDisplay.e");
 
-  sleep(60);
+  //sleep(60);
   stop();
   return 0;
 }
