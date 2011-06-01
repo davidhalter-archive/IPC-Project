@@ -25,8 +25,8 @@ int main(void) {
   int sfd = socket_init();
   socket_read(sfd);
 
-  //children[0] = start_process("HSControl.e");
-  //children[1] = start_process("HSDisplay.e");
+  children[0] = start_process("HSControl.e");
+  children[1] = start_process("HSDisplay.e");
 
   //sleep(60);
   stop();

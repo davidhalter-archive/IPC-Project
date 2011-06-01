@@ -31,3 +31,10 @@ pid_t start_process(char* name){
   }
 }
 
+key_t get_key(const char* key_name, int project_id, int new){
+  if (new == 1){
+    int fd = open(key_name, O_RDWR | O_CREAT, 0770);
+    close(fd);
+  }
+  return ftok(key_name, project_id);
+}

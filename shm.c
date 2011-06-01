@@ -5,6 +5,8 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+#include "common.c"
+
 key_t shm_allocate(const char* key_name, int size, int project_id){
   key_t key = shm_get_key(key_name, project_id, 1);
 
@@ -30,14 +32,6 @@ void* shm_get_memory(key_t key, int size){
     shm_addr = NULL;
   }
   return shm_addr;
-}
-
-key_t shm_get_key(const char* key_name, int project_id, int new){
-  if (new == 1){
-    int fd = open(key_name, O_RDWR | O_CREAT, 0770);
-    close(fd);
-  }
-  return ftok(key_name, project_id);
 }
 
 int shm_release(const char* key_name, key_t key, int size){
