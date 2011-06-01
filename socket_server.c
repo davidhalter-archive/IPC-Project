@@ -1,6 +1,7 @@
 
 #include "defs.h"
 #include "socket_server.h"
+#include "sem.c"
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -64,7 +65,7 @@ int socket_init() {
   return sfd;     // init successful, return server file descriptor
 }
 
-void socket_read(int sfd, void * shm, int nos) {
+void socket_read(int sfd, void* shm, int nos, int sem) {
   int i, addrlen, shm_offset;
   char buf[BUF_SIZE];
   struct sockaddr addr;
@@ -79,9 +80,10 @@ void socket_read(int sfd, void * shm, int nos) {
       printf("seq modulo: %d\n", sd->sequenceNr%nos);
       printf("devices: %d\n", nos);
       */
-      
       shm_offset = sizeof(SensorData)*((sd->sequenceNr%nos) + 3*(sd->deviceID)); // shm offset
+      sem_down(sem);
       *((SensorData*) shm+shm_offset)= *sd;
+      sem_up(sem);
       //printf("offset: %d\n", shm_offset);
     }
     close(cfd);

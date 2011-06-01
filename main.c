@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   // socket tests
   int sfd = socket_init(); 
   while(1) {
-    socket_read(sfd, shm, atoi(argv[1]));
+    socket_read(sfd, shm, atoi(argv[1]), sem);
     SensorData * sd = (SensorData *) shm;
   }
   
