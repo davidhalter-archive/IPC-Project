@@ -64,19 +64,30 @@ int socket_init() {
   return sfd;     // init successful, return server file descriptor
 }
 
-void socket_read(int sfd) {
-  int qty, i, addrlen;
+void socket_read(int sfd, void * shm, int nos) {
+  int i, addrlen, shm_offset;
   char buf[BUF_SIZE];
   struct sockaddr addr;
   int cfd;
 
-  while((cfd = accept(sfd, &addr,(unsigned *) &addrlen)) >= 0)  {
-    while((qty = read(cfd, buf, BUF_SIZE)) > 0) {
+  if((cfd = accept(sfd, &addr,(unsigned *) &addrlen)) >= 0)  {
+    while((read(cfd, buf, BUF_SIZE)) > 0) {
       SensorData * sd = (SensorData *) buf;     // cast char to SensorData struct
-      printf("%d\n", sd->deviceID);
+      /* debug msg
+      printf("id: %d -> ", sd->deviceID);
+      printf("seq: %d -> ", sd->sequenceNr);
+      printf("seq modulo: %d\n", sd->sequenceNr%nos);
+      printf("devices: %d\n", nos);
+      */
+      
+      shm_offset = sizeof(SensorData)*((sd->sequenceNr%nos) + 3*(sd->deviceID)); // shm offset
+      *((SensorData*) shm+shm_offset)= *sd;
+      //printf("offset: %d\n", shm_offset);
     }
     close(cfd);
   }
-  
+}
+
+void socket_close(int sfd) {
   close(sfd);
 }
