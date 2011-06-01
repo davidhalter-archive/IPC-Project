@@ -12,6 +12,8 @@ key_t shm_key;
 int sem = 0; //temporary, will change
 
 int main(int argc, char *argv[]) {
+  int nos = atoi(argv[1]);      //number of sensors
+  
   printf("IPC Project started\n"); 
   add_signal_handler(SIGTERM, signal_handler);
   add_signal_handler(SIGINT, signal_handler);
@@ -27,8 +29,28 @@ int main(int argc, char *argv[]) {
   // socket tests
   int sfd = socket_init(); 
   while(1) {
-    socket_read(sfd, shm, atoi(argv[1]), sem);
+    socket_read(sfd, shm);
     SensorData * sd = (SensorData *) shm;
+    printf("id: %d ->",sd[0].deviceID);
+    printf("seq: %d\n",sd[0].sequenceNr);
+    printf("id: %d ->",sd[1].deviceID);
+    printf("seq: %d\n",sd[1].sequenceNr);
+    printf("id: %d ->",sd[2].deviceID);
+    printf("seq: %d\n",sd[2].sequenceNr);
+    
+    printf("id: %d ->",sd[3].deviceID);
+    printf("seq: %d\n",sd[3].sequenceNr);
+    printf("id: %d ->",sd[4].deviceID);
+    printf("seq: %d\n",sd[4].sequenceNr);
+    printf("id: %d ->",sd[5].deviceID);
+    printf("seq: %d\n",sd[5].sequenceNr);
+    
+    printf("id: %d ->",sd[6].deviceID);
+    printf("seq: %d\n",sd[6].sequenceNr);
+    printf("id: %d ->",sd[7].deviceID);
+    printf("seq: %d\n",sd[7].sequenceNr);
+    printf("id: %d ->",sd[8].deviceID);
+    printf("seq: %d\n",sd[8].sequenceNr);
   }
   
   //sleep(60);
