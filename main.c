@@ -11,8 +11,11 @@ void* shm;
 key_t shm_key; 
 int sem = 0; //temporary, will change
 
+SensorData sd_buf[3*SENSOR_MAX_NUM];   //buffer for sensor data 
+
 int main(int argc, char *argv[]) {
   int nos = atoi(argv[1]);      //number of sensors
+  int offset;
   
   printf("IPC Project started\n"); 
   add_signal_handler(SIGTERM, signal_handler);
@@ -27,31 +30,43 @@ int main(int argc, char *argv[]) {
   children[1] = start_process("HSDisplay.e");
 
   // socket tests
-  int sfd = socket_init(); 
+  int sfd = socket_init();
+  SensorData sd[nos];
+  unsigned old_sequence_nr = 0;
   while(1) {
-    socket_read(sfd, shm);
-    SensorData * sd = (SensorData *) shm;
-    printf("id: %d ->",sd[0].deviceID);
-    printf("seq: %d\n",sd[0].sequenceNr);
-    printf("id: %d ->",sd[1].deviceID);
-    printf("seq: %d\n",sd[1].sequenceNr);
-    printf("id: %d ->",sd[2].deviceID);
-    printf("seq: %d\n",sd[2].sequenceNr);
+    socket_read(sfd, sd);  // write sensor data where sd points
+    offset = nos*(sd->sequenceNr%3) + (sd->deviceID); // offset
+    sd_buf[offset] = *sd;     // buffer sensor data
     
-    printf("id: %d ->",sd[3].deviceID);
-    printf("seq: %d\n",sd[3].sequenceNr);
-    printf("id: %d ->",sd[4].deviceID);
-    printf("seq: %d\n",sd[4].sequenceNr);
-    printf("id: %d ->",sd[5].deviceID);
-    printf("seq: %d\n",sd[5].sequenceNr);
+    /*
+    printf("offset: %d\n", offset);
+    printf("seq: %d -> id: %d\n",sd_buf[0].sequenceNr, sd_buf[0].deviceID);
+    printf("seq: %d -> id: %d\n",sd_buf[1].sequenceNr, sd_buf[1].deviceID);
+    printf("seq: %d -> id: %d\n",sd_buf[2].sequenceNr, sd_buf[2].deviceID);
+    printf("seq: %d -> id: %d\n",sd_buf[3].sequenceNr, sd_buf[3].deviceID);
+    printf("seq: %d -> id: %d\n",sd_buf[4].sequenceNr, sd_buf[4].deviceID);
+    printf("seq: %d -> id: %d\n",sd_buf[5].sequenceNr, sd_buf[5].deviceID);
+    printf("seq: %d -> id: %d\n",sd_buf[6].sequenceNr, sd_buf[6].deviceID);
+    printf("seq: %d -> id: %d\n",sd_buf[7].sequenceNr, sd_buf[7].deviceID);
+    printf("seq: %d -> id: %d\n",sd_buf[8].sequenceNr, sd_buf[8].deviceID);
+    printf("current seq: %d -> id: %d\n",sd->sequenceNr, sd->deviceID);
+    */
     
-    printf("id: %d ->",sd[6].deviceID);
-    printf("seq: %d\n",sd[6].sequenceNr);
-    printf("id: %d ->",sd[7].deviceID);
-    printf("seq: %d\n",sd[7].sequenceNr);
-    printf("id: %d ->",sd[8].deviceID);
-    printf("seq: %d\n",sd[8].sequenceNr);
+    if(sd->sequenceNr > old_sequence_nr) {
+      int i,j;
+      for(i=0;i<3*nos;i=i+nos) {
+        if((sd->sequenceNr == sd_buf[i].sequenceNr+2)) {
+          for(j=0;j<nos;j++) {
+            ((SensorData*) shm)[j]= sd_buf[i+j];
+            //printf(">>>>>>>>>>>>>>>>>>>>> write id %d\n\n", i+j);
+          }
+        }
+      }
+    }
+    
+    old_sequence_nr = sd->sequenceNr;
   }
+  
   
   //sleep(60);
   stop();

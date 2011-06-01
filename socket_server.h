@@ -2,7 +2,7 @@
 #define SOCKET_SERVER_HEADER
 
 int socket_init();
-void socket_read(int sfd, void* shm);
+void socket_read(int sfd, SensorData* sd);
 void socket_close(int sfd);
 
 #endif
