@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   shm_key = shm_allocate(SHM_KEY_FILE, SHM_SIZE, PROJECT_ID);
   shm = shm_get_memory(shm_key, SHM_SIZE);
 
-  sem = sem_init(SEM_KEY_FILE, PROJECT_ID);
+  sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
 
   children[0] = start_process("HSControl.e");
   children[1] = start_process("HSDisplay.e");
