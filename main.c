@@ -11,7 +11,7 @@ void* shm;
 key_t shm_key; 
 int sem = 0; //temporary, will change
 
-int main(void) {
+int main(int argc, char *argv[]) {
   printf("IPC Project started\n"); 
   add_signal_handler(SIGTERM, signal_handler);
   add_signal_handler(SIGINT, signal_handler);
@@ -19,15 +19,18 @@ int main(void) {
   shm_key = shm_allocate(SHM_KEY_FILE, SHM_SIZE, PROJECT_ID);
   shm = shm_get_memory(shm_key, SHM_SIZE);
 
-  *((int*) shm) = 42;
-  
-  // socket tests
-  int sfd = socket_init();
-  socket_read(sfd);
+  sem = sem_init(SEM_KEY_FILE, PROJECT_ID);
 
   children[0] = start_process("HSControl.e");
   children[1] = start_process("HSDisplay.e");
 
+  // socket tests
+  int sfd = socket_init(); 
+  while(1) {
+    socket_read(sfd, shm, atoi(argv[1]), sem);
+    SensorData * sd = (SensorData *) shm;
+  }
+  
   //sleep(60);
   stop();
   return 0;

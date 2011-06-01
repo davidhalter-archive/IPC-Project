@@ -7,7 +7,7 @@ int main(void) {
   add_signal_handler(SIGUSR1, signal_handler);
   signal(SIGINT, SIG_IGN);
 
-  key_t shm_key = shm_get_key(SHM_KEY_FILE, PROJECT_ID, 0);
+  key_t shm_key = get_key(SHM_KEY_FILE, PROJECT_ID);
   void* shm = shm_get_memory(shm_key, SHM_SIZE);
 
   printf("display: %d\n", *(int*)shm);

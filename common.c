@@ -7,7 +7,9 @@
 #include "defs.h"
 #include "shm.c"
 
-#define SHM_SIZE 32
+// SensorData struct is 20 bytes
+// shm stores max. 3 strucs for each sensor
+#define SHM_SIZE 3 * 20 * SENSOR_MAX_NUM
 
 void add_signal_handler(int sig, void (*callback)(int)){
   struct sigaction action;
@@ -31,10 +33,8 @@ pid_t start_process(char* name){
   }
 }
 
-key_t get_key(const char* key_name, int project_id, int new){
-  if (new == 1){
-    int fd = open(key_name, O_RDWR | O_CREAT, 0770);
-    close(fd);
-  }
+key_t get_key(const char* key_name, int project_id){
+  int fd = open(key_name, O_RDWR | O_CREAT, 0770);
+  close(fd);
   return ftok(key_name, project_id);
 }
