@@ -39,11 +39,10 @@ int main(int argc, char *argv[]) {
           seq = sd[i].sequenceNr;
         }
       } else {
+        kill(display_pid, SIGALRM);
         delta[i] = 0;
       }
     }
-    
-    kill(display_pid, SIGALRM);
     
     if(sum < (-5)) {
       strcpy(sensor_msg.mdata.statusText, "+++");

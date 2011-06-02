@@ -4,7 +4,8 @@
 
 void signal_handler(int sig);
 
-char sensor_alrm = 0;
+char sig_alrm = 0;
+char rcv_sig_alrm = 0;
 
 int main(int argc, char *argv[]) {
   int nos = atoi(argv[1]);      // number of sensors
@@ -31,15 +32,22 @@ int main(int argc, char *argv[]) {
     //HomeScreen();
     ClearScreen();
     
+    // alrm signal
+    if(rcv_sig_alrm > 0) {
+      sig_alrm = 1;
+      rcv_sig_alrm--;
+    }else{
+      sig_alrm = 0;
+    }
+    
     //print header
     printf("#####################################################################################\n");
     printf(COMPANY);
-    printf("Data display read | Number of sensors: %d", nos);
-    if(sensor_alrm == 1) {
-      printf(" | SENSOR ALARM!\n");
-      sensor_alrm = 0;
+    printf("Data display read | Number of sensors: %d | ", nos);
+    if(sig_alrm == 1) {
+      printf("System health: Alarm!\n");
     } else {
-      printf("\n");
+      printf("System health: Ok\n");
     }
     printf("#####################################################################################\n\n");
     
@@ -97,7 +105,10 @@ int main(int argc, char *argv[]) {
 
 void signal_handler(int sig){
   if (sig == SIGALRM){
-    sensor_alrm = 1;
+    if(rcv_sig_alrm == 0){
+      rcv_sig_alrm = 4; // 2 seconds 
+      sig_alrm = 1;
+    }   
   }else{
     sleep(1);
     printf("display terminates with sig %d\n", sig);
