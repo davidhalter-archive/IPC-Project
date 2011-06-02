@@ -3,7 +3,7 @@
 
 void signal_handler(int sig);
 
-int main(void) {
+int main(int argc, char *argv[]) {
   add_signal_handler(SIGUSR1, signal_handler);
   signal(SIGINT, SIG_IGN);
 

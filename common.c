@@ -19,10 +19,10 @@ void add_signal_handler(int sig, void (*callback)(int)){
 }
 
 //returns pid
-pid_t start_process(char* name){
+pid_t start_process(char* name, char* argv[]){
   pid_t pid;
   if ((pid = fork()) == 0) {
-    execl(name, name, NULL); 
+    execv(name, argv); 
     printf("!!! panic !!!\n");
   }else if (pid < 0) {
     printf("fork failed\n");

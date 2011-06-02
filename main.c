@@ -11,8 +11,6 @@ void* shm;
 key_t shm_key; 
 int sem = 0; //temporary, will change
 
-SensorData sd_buf[3*SENSOR_MAX_NUM];   //buffer for sensor data 
-
 int main(int argc, char *argv[]) {
   int nos = atoi(argv[1]);      //number of sensors
   int offset;
@@ -26,13 +24,14 @@ int main(int argc, char *argv[]) {
 
   sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
 
-  children[0] = start_process("HSControl.e");
-  children[1] = start_process("HSDisplay.e");
+  children[0] = start_process("HSControl.e", NULL);
+  children[1] = start_process("HSDisplay.e", argv);
 
   // socket tests
   int sfd = socket_init();
   SensorData sd[nos];
   unsigned old_sequence_nr = 0;
+  SensorData sd_buf[3*SENSOR_MAX_NUM];   //buffer for sensor data 
   while(1) {
     socket_read(sfd, sd);  // write sensor data where sd points
     offset = nos*(sd->sequenceNr%3) + (sd->deviceID); // offset
