@@ -18,7 +18,7 @@ key_t shm_allocate(const char* key_name, int size, int project_id){
 }
 
 int shm_get(key_t key, int size){
-  return shmget(key, size, IPC_CREAT);
+  return shmget(key, size, IPC_CREAT | 0666);
 }
 
 void* shm_get_memory(key_t key, int size){

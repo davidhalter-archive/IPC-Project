@@ -14,6 +14,7 @@ void* shm;
 key_t shm_key; 
 int message_id = 0;
 int sem, sfd;
+int terminator_is_coming = 0;
 
 char** main_argv;
 
@@ -100,20 +101,23 @@ int main(int argc, char *argv[]) {
 
 void signal_handler(int sig){
   if (sig == SIGCHLD){
-    int status;
-    usleep(1100000); //make shure all processes are terminated
-    int test = waitpid(children[0], &status, WNOHANG);
-    //printf("status %i, %i\n", status, test);
-    if (test < 0){
-      children[0] = init_display(main_argv);
+    if (terminator_is_coming == 0){
+      int status;
+      usleep(1100000); //make shure all processes are terminated
+      int test = waitpid(children[0], &status, WNOHANG);
+      //printf("status %i, %i\n", status, test);
+      if (test < 0){
+        children[0] = init_display(main_argv);
+      }
+      test = waitpid(children[1], &status, WNOHANG);
+      //printf("status %i, %i\n", status, test);
+      if (test < 0){
+        children[1] = init_control(children[0], main_argv);
+      }
+      fflush(stdout);
     }
-    test = waitpid(children[1], &status, WNOHANG);
-    //printf("status %i, %i\n", status, test);
-    if (test < 0){
-      children[1] = init_control(children[0], main_argv);
-    }
-    fflush(stdout);
   }else{
+    terminator_is_coming = 1;
     printf("main stop signal %i:\n", sig);
     stop();
   }
