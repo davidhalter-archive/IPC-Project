@@ -89,6 +89,5 @@ void stop(){
   }
   shm_release(SHM_KEY_FILE, shm_key, SHM_SIZE);
   sem_release(SEM_KEY_FILE, sem);
-  message_release(MSG_KEY_FILE, message_id);
   exit(0);
 }
