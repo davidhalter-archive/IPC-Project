@@ -1,7 +1,6 @@
 
 #include "defs.h"
 #include "socket_server.h"
-#include "sem.c"
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -70,7 +69,6 @@ void socket_read(int sfd, SensorData * sd) {
   char buf[BUF_SIZE];
   struct sockaddr addr;
   int cfd;
-  int sem=0;
 
   if((cfd = accept(sfd, &addr,(unsigned *) &addrlen)) >= 0)  {
     while((read(cfd, buf, BUF_SIZE)) > 0) {

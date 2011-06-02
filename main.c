@@ -11,10 +11,11 @@ pid_t children[MAX_CHILDREN] = {0,0};
 void* shm; 
 key_t shm_key; 
 int message_id = 0;
+int sem;
 
 int main(int argc, char *argv[]) {
   int nos = atoi(argv[1]);      //number of sensors
-  int offset, sem;
+  int offset;
   
   printf("IPC Project started\n"); 
   add_signal_handler(SIGTERM, signal_handler);
