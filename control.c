@@ -13,7 +13,7 @@ int main(void) {
   Msg control_msg;
   control_msg.msgType = MSG_TYPE1;
 
-  int message_id = message_init(MBOX_KEY_FILE, PROJECT_ID);
+  message_id = message_init(MBOX_KEY_FILE, PROJECT_ID);
   int send_data_tx = 0;
   while(1){
     //roman: send right data (read the manual)

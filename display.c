@@ -10,6 +10,9 @@ int main(int argc, char *argv[]) {
 
   key_t shm_key = get_key(SHM_KEY_FILE, PROJECT_ID);
   void* shm = shm_get_memory(shm_key, SHM_SIZE);
+
+  Message sensor_msg;
+  int message_id = message_init(MBOX_KEY_FILE, PROJECT_ID);
   
   while(1) {
     //HomeScreen();
@@ -44,6 +47,9 @@ int main(int argc, char *argv[]) {
       line_spacer[j] = '\0';
       printf("%sV ref %s\n\n", line_spacer, ref_val);
     }
+    message_receive(message_id, &sensor_msg, MSG_LENGTH, MSG_TYPE, 0);
+    printf("data: %i", sensor_msg.mdata.sequenceNr);
+
     usleep(500000);
   }
   return 0;
