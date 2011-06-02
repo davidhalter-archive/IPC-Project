@@ -4,13 +4,14 @@
 #include <fcntl.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <stdio.h>
 
 key_t shm_allocate(const char* key_name, int size, int project_id){
   key_t key = get_key(key_name, project_id);
 
   int shm_id = shmget(key, size, IPC_CREAT | 0666);
   if (shm_id < 0) {
-     printf("shmget error\n");
+     perror("shmget error");
      exit(1);
   }
   return key;

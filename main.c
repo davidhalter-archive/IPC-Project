@@ -37,6 +37,8 @@ int main(int argc, char *argv[]) {
 
   // socket tests
   sfd = socket_init();
+  if(sfd < 0)
+    stop();
   SensorData sd[nos];
   unsigned old_sequence_nr = 0;
   SensorData sd_buf[3*SENSOR_MAX_NUM];   //buffer for sensor data 

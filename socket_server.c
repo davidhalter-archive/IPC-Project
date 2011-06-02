@@ -38,7 +38,7 @@ int socket_init() {
       if (bind(sfd, ai_ptr->ai_addr, ai_ptr->ai_addrlen) < 0) {
         perror("bind failed ");
         close(sfd);
-        exit(-1);
+        return (-1);
       }
       printf("Binding successful\n");
       printf("Connected to port #%s\n", str_port);
@@ -46,7 +46,7 @@ int socket_init() {
       if (listen(sfd, 5) < 0) {
         close(sfd);
         perror("listen failed ");
-        exit(-1);
+        return (-1);
       }
       else          
         break;
