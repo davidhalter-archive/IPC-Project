@@ -12,7 +12,6 @@ int sem_init(const char* key_name, int project_id, int new){
 
   int sem_id = semget(key, 1, flags); //2. argument: number of semaphors
   
-  //sem_union.val = 0;
   semctl(sem_id, 0, SETVAL, 1); 
   if (new > 0){
     int val = semctl(sem_id, 0, GETVAL);
@@ -30,7 +29,7 @@ void sem_down(int sem){
   buf.sem_num = 1;
   buf.sem_op = -1;
   buf.sem_flg = 0;
-  semop(sem, &buf, 1); // do it
+  semop(sem, &buf, 1);
 }
 
 void sem_up(int sem){
@@ -38,5 +37,10 @@ void sem_up(int sem){
   buf.sem_num = 1;
   buf.sem_op  = 1;
   buf.sem_flg = 0;
-  semop(sem, &buf, 1); // do it
+  semop(sem, &buf, 1);
+}
+
+void sem_release(const char* key_name, int sem){
+  semctl(sem, 0, IPC_RMID);
+  unlink(key_name); 
 }

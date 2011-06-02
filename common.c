@@ -6,6 +6,7 @@
 
 #include "defs.h"
 #include "shm.c"
+//#include "message.c"
 
 // SensorData struct is 20 bytes
 // shm stores max. 3 strucs for each sensor

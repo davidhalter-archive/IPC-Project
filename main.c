@@ -10,6 +10,7 @@ pid_t children[MAX_CHILDREN] = {0,0};
 void* shm; 
 key_t shm_key; 
 int sem = 0; //temporary, will change
+int message_id = 0;
 
 int main(int argc, char *argv[]) {
   int nos = atoi(argv[1]);      //number of sensors
@@ -73,5 +74,7 @@ void stop(){
     }
   }
   shm_release(SHM_KEY_FILE, shm_key, SHM_SIZE);
+  sem_release(SEM_KEY_FILE, sem);
+  message_release(MSG_KEY_FILE, message_id);
   exit(0);
 }
