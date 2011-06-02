@@ -53,8 +53,9 @@ int main(int argc, char *argv[]) {
       printf("%sV ref %s\n\n", line_spacer, ref_val);
     }
     sem_up(sem);
-    message_receive(message_id, &sensor_msg, MSG_LENGTH, MSG_TYPE, 0);
-    printf("data: %i", sensor_msg.mdata.sequenceNr);
+    if (message_receive(message_id, &sensor_msg, MSG_LENGTH, MSG_TYPE, IPC_NOWAIT) >= 0){
+      printf("sensor_data: %i\n", sensor_msg.mdata.sequenceNr);
+    }
 
     usleep(500000);
   }
