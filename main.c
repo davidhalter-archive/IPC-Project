@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 
   sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
 
-  children[0] = start_process("HSControl.e", NULL);
+  children[0] = start_process("HSControl.e", argv);
   children[1] = start_process("HSDisplay.e", argv);
 
   // socket tests
