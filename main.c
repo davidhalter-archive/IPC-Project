@@ -52,12 +52,26 @@ int main(int argc, char *argv[]) {
     */
     
     if(sd->sequenceNr > old_sequence_nr) {
-      int i,j;
+      int i,j,seq;
+      char write = 1;
       for(i=0;i<3*nos;i=i+nos) {
         if((sd->sequenceNr == sd_buf[i].sequenceNr+2)) {
-          for(j=0;j<nos;j++) {
-            ((SensorData*) shm)[j]= sd_buf[i+j];
-            //printf(">>>>>>>>>>>>>>>>>>>>> write id %d\n\n", i+j);
+          
+          // check for same sequence nr
+          seq = sd_buf[i].sequenceNr;
+          for(j=1;j<nos;j++) {
+            if(sd_buf[i+j].sequenceNr != seq) {
+              write = 0;        // do not write to shm
+              break;
+            }
+            seq = sd_buf[i+j].sequenceNr;
+          }
+          
+          if(write == 1) {
+            for(j=0;j<nos;j++) {
+              ((SensorData*) shm)[j]= sd_buf[i+j];
+              //printf(">>>>>>>>>>>>>>>>>>>>> write id %d\n\n", i+j);
+            }
           }
         }
       }
