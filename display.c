@@ -1,10 +1,12 @@
 
 #include "common.c"
+#include "sem.c"
 
 void signal_handler(int sig);
 
 int main(int argc, char *argv[]) {
   int nos = atoi(argv[1]);      // number of sensors
+  int sem;
   add_signal_handler(SIGUSR1, signal_handler);
   signal(SIGINT, SIG_IGN);
 
@@ -14,10 +16,13 @@ int main(int argc, char *argv[]) {
   Message sensor_msg;
   int message_id = message_init(MBOX_KEY_FILE, PROJECT_ID);
   
+  sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
+  
   while(1) {
     //HomeScreen();
     ClearScreen();
     
+    sem_down(sem);
     SensorData * sd = (SensorData *) shm;
     int i, j;
     for(i=0; i<nos; i++) {
@@ -47,6 +52,7 @@ int main(int argc, char *argv[]) {
       line_spacer[j] = '\0';
       printf("%sV ref %s\n\n", line_spacer, ref_val);
     }
+    sem_up(sem);
     message_receive(message_id, &sensor_msg, MSG_LENGTH, MSG_TYPE, 0);
     printf("data: %i", sensor_msg.mdata.sequenceNr);
 
