@@ -3,6 +3,7 @@
 #include "socket_server.h"
 #include "sem.c"
 #include <sys/socket.h>
+#include <sys/wait.h>
 
 void signal_handler(int sig);
 void stop();
@@ -14,7 +15,7 @@ key_t shm_key;
 int message_id = 0;
 int sem, sfd;
 
-char* main_argv;
+char** main_argv;
 
 int main(int argc, char *argv[]) {
   main_argv = argv;
@@ -99,12 +100,12 @@ void signal_handler(int sig){
   if (sig == SIGCHLD){
     int status;
     usleep(1100000); //make shure all processes are terminated
-    int test = waitpid(children[0], status, WNOHANG);
+    int test = waitpid(children[0], &status, WNOHANG);
     //printf("status %i, %i\n", status, test);
     if (test < 0){
       children[0] = init_display(main_argv);
     }
-    test = waitpid(children[1], status, WNOHANG);
+    test = waitpid(children[1], &status, WNOHANG);
     //printf("status %i, %i\n", status, test);
     if (test < 0){
       children[1] = init_control(children[0], main_argv);
@@ -122,7 +123,8 @@ void stop(){
   for(i=0;i<MAX_CHILDREN;i++){
     if (children[i] != 0){
       kill (children[i], SIGUSR1);
-      waitpid(children[i]);
+      int status;
+      waitpid(children[i], &status, 0);
     }
   }
   shm_release(SHM_KEY_FILE, shm_key, SHM_SIZE);
