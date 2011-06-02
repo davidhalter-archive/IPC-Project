@@ -26,6 +26,8 @@ int main(int argc, char *argv[]) {
 
   sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
 
+  message_id = message_init(MBOX_KEY_FILE, PROJECT_ID);
+
   children[0] = start_process("HSControl.e", argv);
   children[1] = start_process("HSDisplay.e", argv);
 
@@ -106,5 +108,6 @@ void stop(){
   }
   shm_release(SHM_KEY_FILE, shm_key, SHM_SIZE);
   sem_release(SEM_KEY_FILE, sem);
+  message_release(MBOX_KEY_FILE, message_id);
   exit(0);
 }

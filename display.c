@@ -8,7 +8,10 @@ int main(int argc, char *argv[]) {
   int nos = atoi(argv[1]);      // number of sensors
   int sem;
   add_signal_handler(SIGUSR1, signal_handler);
-  signal(SIGINT, SIG_IGN);
+  add_signal_handler(SIGINT,  signal_handler);
+  add_signal_handler(SIGTERM, signal_handler);
+  add_signal_handler(SIGALRM, signal_handler);
+  //signal(SIGINT, SIG_IGN);
 
   key_t shm_key = get_key(SHM_KEY_FILE, PROJECT_ID);
   void* shm = shm_get_memory(shm_key, SHM_SIZE);
@@ -63,6 +66,11 @@ int main(int argc, char *argv[]) {
 }
 
 void signal_handler(int sig){
-  printf("display terminates with sig %d\n", sig);
-  exit(0);
+  if (sig == SIGALRM){
+    printf("ALARM");
+  }else{
+    sleep(1);
+    printf("display terminates with sig %d\n", sig);
+    exit(0);
+  }
 }
