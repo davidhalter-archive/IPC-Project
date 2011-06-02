@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "defs.h"
 #include "shm.c"
