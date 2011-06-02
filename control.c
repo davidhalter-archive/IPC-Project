@@ -3,10 +3,13 @@
 
 int message_id = 0; 
 void signal_handler(int sig);
+int pid_display = 0;
 
 int main(int argc, char *argv[]) {
   add_signal_handler(SIGUSR1, signal_handler);
-  signal(SIGINT, SIG_IGN);
+  add_signal_handler(SIGINT,  signal_handler);
+  add_signal_handler(SIGTERM, signal_handler);
+  //signal(SIGINT, SIG_IGN);
 
   int nos = atoi(argv[1]);      //number of sensors
   pid_t display_pid = atoi(argv[2]);
@@ -20,7 +23,7 @@ int main(int argc, char *argv[]) {
   void* shm = shm_get_memory(shm_key, SHM_SIZE);
   SensorData * sd = (SensorData *) shm;
   
-  message_id = message_init(MBOX_KEY_FILE, PROJECT_ID);
+  int message_id = message_init(MBOX_KEY_FILE, PROJECT_ID);
   int send_data_tx = 0;
   while(1){
     int i, device_id, seq;
@@ -40,7 +43,7 @@ int main(int argc, char *argv[]) {
       }
     }
     
-    //kill(display_pid, SIGALRM);
+    kill(display_pid, SIGALRM);
     
     if(sum < (-5)) {
       strcpy(sensor_msg.mdata.statusText, "+++");
@@ -52,7 +55,6 @@ int main(int argc, char *argv[]) {
     sensor_msg.mdata.sequenceNr = seq;
     sensor_msg.mdata.deviceID   = device_id;
     sensor_msg.mdata.delta      = max_delta;
-    strcpy(sensor_msg.mdata.statusText, "43");
     message_send(message_id, &sensor_msg, MSG_LENGTH, 0);
     
     if (send_data_tx){
@@ -73,6 +75,6 @@ int main(int argc, char *argv[]) {
 
 void signal_handler(int sig){
   printf("control terminates\n");
-  message_release(MBOX_KEY_FILE, message_id);
+  kill(pid_display, SIGINT);
   exit(0);
 }

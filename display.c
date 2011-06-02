@@ -4,11 +4,21 @@
 
 void signal_handler(int sig);
 
+char sensor_alrm = 0;
+
 int main(int argc, char *argv[]) {
   int nos = atoi(argv[1]);      // number of sensors
   int sem;
+  
+  int msg_device_buf, msg_sequence_buf;
+  char msg_status_buf[4];
+  float msg_delta_buf;
+  
   add_signal_handler(SIGUSR1, signal_handler);
-  signal(SIGINT, SIG_IGN);
+  add_signal_handler(SIGINT,  signal_handler);
+  add_signal_handler(SIGTERM, signal_handler);
+  add_signal_handler(SIGALRM, signal_handler);
+  //signal(SIGINT, SIG_IGN);
 
   key_t shm_key = get_key(SHM_KEY_FILE, PROJECT_ID);
   void* shm = shm_get_memory(shm_key, SHM_SIZE);
@@ -19,12 +29,18 @@ int main(int argc, char *argv[]) {
   sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
   while(1) {
     //HomeScreen();
-    //ClearScreen();
+    ClearScreen();
     
     //print header
     printf("#####################################################################################\n");
     printf(COMPANY);
-    printf("Data display read | Number of sensors: %d\n", nos);
+    printf("Data display read | Number of sensors: %d", nos);
+    if(sensor_alrm == 1) {
+      printf(" | SENSOR ALARM!\n");
+      sensor_alrm = 0;
+    } else {
+      printf("\n");
+    }
     printf("#####################################################################################\n\n");
     
     // print data
@@ -59,9 +75,20 @@ int main(int argc, char *argv[]) {
       printf("%sV ref %s\n\n", line_spacer, ref_val);
     }
     sem_up(sem);
+    
+    
     if (message_receive(message_id, &sensor_msg, MSG_LENGTH, MSG_TYPE, IPC_NOWAIT) >= 0){
-      printf("sensor_data: %i\n", sensor_msg.mdata.sequenceNr);
+      msg_sequence_buf = sensor_msg.mdata.sequenceNr;
+      msg_device_buf = sensor_msg.mdata.deviceID;
+      msg_delta_buf = sensor_msg.mdata.delta;
+      strcpy(msg_status_buf, sensor_msg.mdata.statusText);
     }
+    
+    printf("Control messages:\n");
+    printf("Sequence number: %i\n", msg_sequence_buf);
+    printf("Device ID:       %i\n", msg_device_buf);
+    printf("Max Delta:       %f\n", msg_delta_buf);
+    printf("Status:          %s\n", msg_status_buf);
 
     usleep(500000);
   }
@@ -69,6 +96,11 @@ int main(int argc, char *argv[]) {
 }
 
 void signal_handler(int sig){
-  printf("display terminates with sig %d\n", sig);
-  exit(0);
+  if (sig == SIGALRM){
+    sensor_alrm = 1;
+  }else{
+    sleep(1);
+    printf("display terminates with sig %d\n", sig);
+    exit(0);
+  }
 }

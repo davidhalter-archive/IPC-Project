@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   shm = shm_get_memory(shm_key, SHM_SIZE);
 
   sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
-  
+ 
   children[0] = start_process("HSDisplay.e", argv);
   char * argv_control[4], argv_buf[sizeof(pid_t)];
   sprintf(argv_buf, "%d", children[0]);
@@ -114,5 +114,6 @@ void stop(){
   shm_release(SHM_KEY_FILE, shm_key, SHM_SIZE);
   sem_release(SEM_KEY_FILE, sem);
   socket_close(sfd);  
+  message_release(MBOX_KEY_FILE, message_id);
   exit(0);
 }
