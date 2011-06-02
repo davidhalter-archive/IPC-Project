@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
   
   sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 0);
 
+  //exit(0);
   while(1) {
     //HomeScreen();
     ClearScreen();
@@ -111,7 +112,6 @@ void signal_handler(int sig){
       sig_alrm = 1;
     }   
   }else{
-    sleep(1);
     printf("display terminates with sig %d\n", sig);
     exit(0);
   }

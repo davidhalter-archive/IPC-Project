@@ -14,27 +14,25 @@ key_t shm_key;
 int message_id = 0;
 int sem, sfd;
 
+char* main_argv;
+
 int main(int argc, char *argv[]) {
+  main_argv = argv;
   int nos = atoi(argv[1]);      //number of sensors
   int offset;
   
   printf("IPC Project started\n"); 
   add_signal_handler(SIGTERM, signal_handler);
   add_signal_handler(SIGINT, signal_handler);
+  add_signal_handler(SIGCHLD, signal_handler);
 
   shm_key = shm_allocate(SHM_KEY_FILE, SHM_SIZE, PROJECT_ID);
   shm = shm_get_memory(shm_key, SHM_SIZE);
 
   sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
  
-  children[0] = start_process("HSDisplay.e", argv);
-  char * argv_control[4], argv_buf[sizeof(pid_t)];
-  sprintf(argv_buf, "%d", children[0]);
-  argv_control[0] = argv[0];
-  argv_control[1] = argv[1];
-  argv_control[2] = argv_buf;
-  argv_control[3] = NULL;
-  children[1] = start_process("HSControl.e", argv_control);
+  children[0] = init_display(argv);
+  children[1] = init_control(children[0], argv);
 
   // socket tests
   sfd = socket_init();
@@ -98,8 +96,24 @@ int main(int argc, char *argv[]) {
 }
 
 void signal_handler(int sig){
-  printf("main stop signal %i:\n", sig);
-  stop();
+  if (sig == SIGCHLD){
+    int status;
+    usleep(1100000); //make shure all processes are terminated
+    int test = waitpid(children[0], status, WNOHANG);
+    //printf("status %i, %i\n", status, test);
+    if (test < 0){
+      children[0] = init_display(main_argv);
+    }
+    test = waitpid(children[1], status, WNOHANG);
+    //printf("status %i, %i\n", status, test);
+    if (test < 0){
+      children[1] = init_control(children[0], main_argv);
+    }
+    fflush(stdout);
+  }else{
+    printf("main stop signal %i:\n", sig);
+    stop();
+  }
 }
 
 void stop(){
@@ -116,4 +130,18 @@ void stop(){
   socket_close(sfd);  
   message_release(MBOX_KEY_FILE, message_id);
   exit(0);
+}
+
+pid_t init_display(char *argv[]){
+  return start_process("HSDisplay.e", argv);
+}
+
+pid_t init_control(pid_t pid_display, char *argv[]){
+  char * argv_control[4], argv_buf[sizeof(pid_t)];
+  sprintf(argv_buf, "%d", pid_display);
+  argv_control[0] = argv[0];
+  argv_control[1] = argv[1];
+  argv_control[2] = argv_buf;
+  argv_control[3] = NULL;
+  return start_process("HSControl.e", argv_control);
 }
