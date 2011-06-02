@@ -3,7 +3,7 @@
 
 int message_id = 0; 
 void signal_handler(int sig);
-int pid_display = 0;
+pid_t pid_display = 0;
 
 int main(int argc, char *argv[]) {
   add_signal_handler(SIGUSR1, signal_handler);
@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
   //signal(SIGINT, SIG_IGN);
 
   int nos = atoi(argv[1]);      //number of sensors
-  pid_t display_pid = atoi(argv[2]);
+  pid_display = atoi(argv[2]);
   
   Message sensor_msg;
   sensor_msg.msgType = MSG_TYPE;
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
           seq = sd[i].sequenceNr;
         }
       } else {
-        kill(display_pid, SIGALRM);
+        kill(pid_display, SIGALRM);
         delta[i] = 0;
       }
     }
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 }
 
 void signal_handler(int sig){
-  printf("control terminates\n");
+  printf("control terminates%i, %i\n", sig, pid_display);
   kill(pid_display, SIGINT);
   exit(0);
 }

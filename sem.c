@@ -12,10 +12,10 @@ int sem_init(const char* key_name, int project_id, int new){
 
   int sem_id = semget(key, 1, flags); //2. argument: number of semaphors
   
-  semctl(sem_id, 0, SETVAL, 1); 
   if (new > 0){
-    int val = semctl(sem_id, 0, GETVAL);
+    semctl(sem_id, 0, SETVAL, 1); 
   }
+  //int val = semctl(sem_id, 0, GETVAL);
   //printf("test: %i\n", val);
   if (sem_id < 0) {
     printf("shm error\n");
@@ -26,7 +26,7 @@ int sem_init(const char* key_name, int project_id, int new){
 
 void sem_down(int sem){
   struct sembuf buf;
-  buf.sem_num = 1;
+  buf.sem_num = 0;
   buf.sem_op = -1;
   buf.sem_flg = 0;
   semop(sem, &buf, 1);
@@ -34,7 +34,7 @@ void sem_down(int sem){
 
 void sem_up(int sem){
   struct sembuf buf;
-  buf.sem_num = 1;
+  buf.sem_num = 0;
   buf.sem_op  = 1;
   buf.sem_flg = 0;
   semop(sem, &buf, 1);

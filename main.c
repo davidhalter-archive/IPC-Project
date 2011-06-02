@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
 }
 
 void signal_handler(int sig){
-  printf("main stop signal\n");
+  printf("main stop signal %i:\n", sig);
   stop();
 }
 
