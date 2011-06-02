@@ -1,6 +1,7 @@
 
 #include "common.c"
 #include "socket_server.h"
+#include "sem.c"
 
 void signal_handler(int sig);
 void stop();
@@ -9,12 +10,11 @@ void stop();
 pid_t children[MAX_CHILDREN] = {0,0};
 void* shm; 
 key_t shm_key; 
-int sem = 0; //temporary, will change
 int message_id = 0;
 
 int main(int argc, char *argv[]) {
   int nos = atoi(argv[1]);      //number of sensors
-  int offset;
+  int offset, sem;
   
   printf("IPC Project started\n"); 
   add_signal_handler(SIGTERM, signal_handler);
@@ -69,10 +69,12 @@ int main(int argc, char *argv[]) {
           }
           
           if(write == 1) {
+            sem_down(sem);
             for(j=0;j<nos;j++) {
               ((SensorData*) shm)[j]= sd_buf[i+j];
               //printf(">>>>>>>>>>>>>>>>>>>>> write id %d\n\n", i+j);
             }
+            sem_up(sem);
           }
         }
       }
