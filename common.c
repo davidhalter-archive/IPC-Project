@@ -6,6 +6,7 @@
 
 #include "defs.h"
 #include "shm.c"
+#include "message.c"
 
 // SensorData struct is 20 bytes
 #define SHM_SIZE 20 * SENSOR_MAX_NUM
