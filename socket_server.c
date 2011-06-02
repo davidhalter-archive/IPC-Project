@@ -57,7 +57,7 @@ int socket_init() {
   freeaddrinfo(ai_list); // not longer used, free
   
   if (ai_ptr == NULL) {
-    printf("could not set up a socket server %s\n");
+    printf("could not set up a socket server\n");
     exit(-1);
   }
 

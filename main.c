@@ -2,6 +2,7 @@
 #include "common.c"
 #include "socket_server.h"
 #include "sem.c"
+#include <sys/socket.h>
 
 void signal_handler(int sig);
 void stop();
@@ -11,7 +12,7 @@ pid_t children[MAX_CHILDREN] = {0,0};
 void* shm; 
 key_t shm_key; 
 int message_id = 0;
-int sem;
+int sem, sfd;
 
 int main(int argc, char *argv[]) {
   int nos = atoi(argv[1]);      //number of sensors
@@ -25,12 +26,18 @@ int main(int argc, char *argv[]) {
   shm = shm_get_memory(shm_key, SHM_SIZE);
 
   sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
-
-  children[0] = start_process("HSControl.e", argv);
-  children[1] = start_process("HSDisplay.e", argv);
+  
+  children[0] = start_process("HSDisplay.e", argv);
+  char * argv_control[4], argv_buf[sizeof(pid_t)];
+  sprintf(argv_buf, "%d", children[0]);
+  argv_control[0] = argv[0];
+  argv_control[1] = argv[1];
+  argv_control[2] = argv_buf;
+  argv_control[3] = NULL;
+  children[1] = start_process("HSControl.e", argv_control);
 
   // socket tests
-  int sfd = socket_init();
+  sfd = socket_init();
   SensorData sd[nos];
   unsigned old_sequence_nr = 0;
   SensorData sd_buf[3*SENSOR_MAX_NUM];   //buffer for sensor data 
@@ -106,5 +113,6 @@ void stop(){
   }
   shm_release(SHM_KEY_FILE, shm_key, SHM_SIZE);
   sem_release(SEM_KEY_FILE, sem);
+  socket_close(sfd);  
   exit(0);
 }

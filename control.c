@@ -9,6 +9,7 @@ int main(int argc, char *argv[]) {
   signal(SIGINT, SIG_IGN);
 
   int nos = atoi(argv[1]);      //number of sensors
+  pid_t display_pid = atoi(argv[2]);
   
   Message sensor_msg;
   sensor_msg.msgType = MSG_TYPE;
@@ -22,7 +23,6 @@ int main(int argc, char *argv[]) {
   message_id = message_init(MBOX_KEY_FILE, PROJECT_ID);
   int send_data_tx = 0;
   while(1){
-    
     int i, device_id, seq;
     float delta[nos], max_delta = 0, sum = 0;
     for(i=0; i<nos; i++) {
@@ -39,6 +39,8 @@ int main(int argc, char *argv[]) {
         delta[i] = 0;
       }
     }
+    
+    //kill(display_pid, SIGALRM);
     
     if(sum < (-5)) {
       strcpy(sensor_msg.mdata.statusText, "+++");

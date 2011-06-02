@@ -17,11 +17,17 @@ int main(int argc, char *argv[]) {
   int message_id = message_init(MBOX_KEY_FILE, PROJECT_ID);
   
   sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
-  
   while(1) {
     //HomeScreen();
-    ClearScreen();
+    //ClearScreen();
     
+    //print header
+    printf("#####################################################################################\n");
+    printf(COMPANY);
+    printf("Data display read | Number of sensors: %d\n", nos);
+    printf("#####################################################################################\n\n");
+    
+    // print data
     sem_down(sem);
     SensorData * sd = (SensorData *) shm;
     int i, j;
