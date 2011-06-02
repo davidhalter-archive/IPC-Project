@@ -9,8 +9,7 @@
 //#include "message.c"
 
 // SensorData struct is 20 bytes
-// shm stores max. 3 strucs for each sensor
-#define SHM_SIZE 3 * 20 * SENSOR_MAX_NUM
+#define SHM_SIZE 20 * SENSOR_MAX_NUM
 
 void add_signal_handler(int sig, void (*callback)(int)){
   struct sigaction action;
@@ -21,10 +20,10 @@ void add_signal_handler(int sig, void (*callback)(int)){
 }
 
 //returns pid
-pid_t start_process(char* name){
+pid_t start_process(char* name, char* argv[]){
   pid_t pid;
   if ((pid = fork()) == 0) {
-    execl(name, name, NULL); 
+    execv(name, argv); 
     printf("!!! panic !!!\n");
   }else if (pid < 0) {
     printf("fork failed\n");
