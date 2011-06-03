@@ -50,20 +50,6 @@ int main(int argc, char *argv[]) {
     offset = nos*(sd->sequenceNr%3) + (sd->deviceID); // offset
     sd_buf[offset] = *sd;     // buffer sensor data
     
-    /*
-    printf("offset: %d\n", offset);
-    printf("seq: %d -> id: %d\n",sd_buf[0].sequenceNr, sd_buf[0].deviceID);
-    printf("seq: %d -> id: %d\n",sd_buf[1].sequenceNr, sd_buf[1].deviceID);
-    printf("seq: %d -> id: %d\n",sd_buf[2].sequenceNr, sd_buf[2].deviceID);
-    printf("seq: %d -> id: %d\n",sd_buf[3].sequenceNr, sd_buf[3].deviceID);
-    printf("seq: %d -> id: %d\n",sd_buf[4].sequenceNr, sd_buf[4].deviceID);
-    printf("seq: %d -> id: %d\n",sd_buf[5].sequenceNr, sd_buf[5].deviceID);
-    printf("seq: %d -> id: %d\n",sd_buf[6].sequenceNr, sd_buf[6].deviceID);
-    printf("seq: %d -> id: %d\n",sd_buf[7].sequenceNr, sd_buf[7].deviceID);
-    printf("seq: %d -> id: %d\n",sd_buf[8].sequenceNr, sd_buf[8].deviceID);
-    printf("current seq: %d -> id: %d\n",sd->sequenceNr, sd->deviceID);
-    */
-    
     if(sd->sequenceNr > old_sequence_nr) {
       int i,j,seq;
       char write = 1;
@@ -91,7 +77,13 @@ int main(int argc, char *argv[]) {
         }
       }
     }
-    
+    /*
+    int status;
+      int test = waitpid(children[0], &status, WNOHANG);
+      printf("status %i, %i, %i\n", status, test, WIFEXITED(status));
+      test = waitpid(children[1], &status, WNOHANG);
+      printf("status %i, %i, %i\n", status, test, WIFEXITED(status));
+    */
     old_sequence_nr = sd->sequenceNr;
   }
   
@@ -107,13 +99,13 @@ void signal_handler(int sig){
       int status;
       usleep(1100000); //make shure all processes are terminated
       int test = waitpid(children[0], &status, WNOHANG);
-      //printf("status %i, %i\n", status, test);
-      if (test < 0){
+      printf("status %i, %i, %i\n", status, test, WIFEXITED(status));
+      if (WIFEXITED(status) > 0){
         children[0] = init_display(main_argv);
       }
       test = waitpid(children[1], &status, WNOHANG);
-      //printf("status %i, %i\n", status, test);
-      if (test < 0){
+      printf("status %i, %i, %i\n", status, test, WIFEXITED(status));
+      if (WIFEXITED(status) > 0 && test != 0){
         children[1] = init_control(children[0], main_argv);
       }
       fflush(stdout);
