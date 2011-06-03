@@ -148,7 +148,7 @@ pid_t init_display(char *argv[]){
 
 pid_t init_control(pid_t pid_display, char *argv[]){
   char* argv_control[4];
-  char argv_buf[13];
+  char argv_buf[20];
   sprintf(argv_buf, "%d", pid_display);
   argv_control[0] = argv[0];
   argv_control[1] = argv[1];
