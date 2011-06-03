@@ -71,9 +71,9 @@ typedef struct {                                    // message type 1
 //------------------------------------------------------------------------------
 
 #define PROJECT_ID    201
-#define SEM_KEY_FILE  (const char *)("/tmp/my_sem_key.tmp")
-#define SHM_KEY_FILE  (const char *)("/tmp/my_shm_key.tmp")
-#define MBOX_KEY_FILE (const char *)("/tmp/my_box_key.tmp")
+#define SEM_KEY_FILE  (const char *)("/tmp/halfu_sem_key.tmp")
+#define SHM_KEY_FILE  (const char *)("/tmp/halfu_shm_key.tmp")
+#define MBOX_KEY_FILE (const char *)("/tmp/halfu_box_key.tmp")
 
 //------------------------------------------------------------------------------
 
