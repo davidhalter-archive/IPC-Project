@@ -1,7 +1,6 @@
 
 #include "common.c"
 
-int message_id = 0; 
 void signal_handler(int sig);
 pid_t pid_display = 0;
 

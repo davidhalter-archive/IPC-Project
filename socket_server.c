@@ -65,12 +65,12 @@ int socket_init() {
 }
 
 void socket_read(int sfd, SensorData * sd) {
-  int addrlen;
   char buf[BUF_SIZE];
   struct sockaddr addr;
+  socklen_t addrlen = sizeof(addr);
   int cfd;
 
-  if((cfd = accept(sfd, &addr,(unsigned *) &addrlen)) >= 0)  {
+  if((cfd = accept(sfd, &addr, &addrlen)) >= 0)  {
     while((read(cfd, buf, BUF_SIZE)) > 0) {
       *sd = *((SensorData *) buf);      // cast char to SensorData struct
     }

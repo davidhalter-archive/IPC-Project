@@ -1,5 +1,5 @@
 CMP=		g++
-CMPFLAGS=	-g
+CMPFLAGS=-g
 EXENAME0=	HSDisplay.e
 EXENAME1=	HSControl.e
 EXENAME2=	HSMain.e

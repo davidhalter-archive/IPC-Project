@@ -32,6 +32,8 @@ int main(int argc, char *argv[]) {
   shm = shm_get_memory(shm_key, SHM_SIZE);
 
   sem = sem_init(SEM_KEY_FILE, PROJECT_ID, 1); //semaphor new -> 1
+
+  message_id = message_init(MBOX_KEY_FILE, PROJECT_ID);
  
   children[0] = init_display(argv);
   children[1] = init_control(children[0], argv);
@@ -145,7 +147,8 @@ pid_t init_display(char *argv[]){
 }
 
 pid_t init_control(pid_t pid_display, char *argv[]){
-  char * argv_control[4], argv_buf[sizeof(pid_t)];
+  char* argv_control[4];
+  char argv_buf[13];
   sprintf(argv_buf, "%d", pid_display);
   argv_control[0] = argv[0];
   argv_control[1] = argv[1];
